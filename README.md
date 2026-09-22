@@ -1,31 +1,34 @@
-<!--
-  This is your project's front page. Replace every placeholder below.
-  It is the first thing your instructor and any future employer will read, and
-  the live link in it is how your project gets opened for grading.
+# PokéStrength Gym
 
-  New here? Read START-HERE.md first. Delete this comment when you are done.
--->
+> For university students, gym members, and Pokémon fans looking for a more engaging way to track workouts through XP progression, achievements, and collectible rewards.
 
-# App Name
+- **Live demo:** https://YOURUSERNAME.github.io/YOUR-REPO/ <!-- GitHub Pages is set up already; replace if you host elsewhere -->
+- **Demo video:** `docs/demo.mp4` (link it here once it exists)
+- **Course:** Applications Development and Emerging Technologies (6ADET), Holy Angel University
+- **Author:** Kayama, Masaharu (phantomdoescode)
 
-> One sentence: what this app does, and who it is for.
+## Project Structure
 
-**Live demo:** https://YOURUSERNAME.github.io/YOUR-REPO/ <!-- GitHub Pages is set up already; replace if you host elsewhere -->
-**Demo video:** `docs/demo.mp4` (link it here once it exists)
-**Course:** Applications Development and Emerging Technologies (6ADET), Holy Angel University
-**Author:** Your Name
-
-This repository lives in the author's own GitHub account and is public on
-purpose. There is no `student.json` here and there should not be one: see
-`docs/06-security-and-privacy.md` for what a public repo means for secrets and
-personal data.
+```yaml
+PokeStrength-Gym/
+├── docs/ # proposal, mockups, weekly reports, screenshots
+├── lib/ # app source code
+│   ├── controllers/ # state and logic (MVC controller)
+│   ├── data/ # plain data classes (MVC model)
+│   ├── screens/ # full-page views (MVC view)
+│   ├── services/ # local storage and supporting services
+│   ├── theme/ # design tokens, shared styling
+│   ├── widgets/ # reusable multi-widget components
+│   └── main.dart # app entry point
+├── web/ # web platform target
+├── AI-USAGE.md # AI usage log
+├── README.md # this file
+└── pubspec.yaml # dependencies
+```
 
 ---
 
 ## Screenshots
-
-Put two or three real screenshots at phone size in `docs/assets/`, then replace
-this paragraph with them:
 
 ```markdown
 | Home | Detail | Add |
@@ -33,56 +36,50 @@ this paragraph with them:
 | ![Home](docs/assets/screen-home.png) | ![Detail](docs/assets/screen-detail.png) | ![Add](docs/assets/screen-add.png) |
 ```
 
-A repo without screenshots reads as abandoned, whatever the code says.
-
 ## What it does
 
-Three to five bullets. What can a user actually do?
+- The user can track workouts by recording exercises, categories, sets, repetitions, duration, calories burned, and completion dates.
+- The user can earn Pokémon-inspired rewards through XP, levels, Pokémon companions, gym badges, achievements, and rarity.
+- The user can browse and search the exercise library by muscle group.
+- The user can view their trainer level, XP, workout streak, total workouts, and Pokémon collection.
+- The user can finish workouts and progress toward rewards through the connection between workout completion and the Rewards Vault.
 
-- ...
-- ...
-- ...
+## How to use it
+
+1. Home screen. View trainer progress, today's active mission, nearby rewards, and start a workout. The bottom navigation provides access to Home, Workout, Library, Rewards, and Profile.
+2. Active Gym Workout. Follow the listed exercises, track training time, and resume or finish the current workout. Finishing the workout leads to the Rewards Vault to claim gym badges and rewards.
+3. Library. Search for exercises and browse exercises by muscle group.
+4. Rewards Vault. View collected Pokémon companions and earned gym badges. Pokémon reward cards and badges can be opened to view their details.
+5. Trainer Card Hub. View trainer level, XP, workout streak, total workouts, and Pokémon collection. Use Edit Trainer Card to update the trainer profile.
 
 ## Built with
 
 | | |
 | --- | --- |
 | Framework | Flutter (Dart) |
-| State | `setState` / provider / riverpod (say which) |
-| Storage | shared_preferences / Hive / Drift / Firebase / Supabase / other |
-| Other packages | list the ones that matter, with a word on why |
+| State | `setState` and controller classes |
+| Storage | shared_preferences |
+| Other packages | `device_preview` for phone-sized development previews; `fl_chart` for planned workout and XP progress charts |
 
 ## Running it yourself
 
 ```bash
+git clone https://github.com/phantomdoescode/PokeStrength-Gym
 flutter pub get
-cp .env.example .env      # only if your app needs keys, see below
 flutter run -d web-server --web-port 8080
 ```
 
-Then open http://localhost:8080. Requires Flutter (run `flutter --version` and
-put yours here).
+Then open http://localhost:8080. Requires Flutter and Dart. The application is intended to run as a Flutter web application and can be checked using a phone-sized layout with device_preview.
 
 ### Environment variables
 
-This project reads its configuration from a `.env` file that is **not** in the
-repository. Copy `.env.example`, fill in your own values, and never commit the
-result.
-
-| Variable | What it is | Where to get one |
-| --- | --- | --- |
-| `EXAMPLE_API_KEY` | ... | ... |
+This project currently does not use environment variables. No API keys, passwords, authentication tokens, or other secrets are required for the MVP.
 
 ## Privacy and secrets
 
-Required section. Two or three honest sentences:
-
-- What personal data this app stores, if any, and where it goes.
-- Where the secrets live (`.env` locally, repository secrets in the deploy
-  workflow) and what protects the data on the service side (Firestore rules,
-  Supabase RLS, or "nothing leaves the device").
-- Confirm that all sample data, screenshots and the video contain **no real
-  personal information**.
+- The app is designed as a single-user application and stores the member profile, workout history, XP, level, workout streak, and Pokémon rewards locally using shared_preferences.
+- The current MVP does not require a remote database or API service. Passwords, API keys, authentication tokens, private keys, and real personal information should not be committed to the public repository.
+- The stored data uses the member, workouts, and rewards keys in local storage.
 
 ## Project documentation
 
@@ -98,33 +95,21 @@ Required section. Two or three honest sentences:
 
 ## Status and what is next
 
-Be honest. What works, what is half done, what you would build next. An honest
-"known issues" section reads better than a claim the reader disproves in thirty
-seconds.
+The current MVP focuses on the workout tracker, Pokémon reward system, exercise library, and trainer profile. The five main screens and their navigation flow have been defined properly, while the design system includes both light and dark themes.
+
+Future improvements may include Pokémon Gym Challenges, leaderboards and monthly challenges, a friend system, daily Pokémon missions, workout sharing, and progress charts. The main development concern is keeping XP progression balanced without making rewards too easy or repetitive.
 
 ## Credits
 
 - Packages: see `pubspec.yaml`
-- Assets, icons, 3D models, sounds: name the author and the licence for each
-- People who helped, and how
+- Assets, icons, 3D models, sounds: (tentative)
+- People who helped: (tentative)
 
 ## AI use
 
-If you used AI while building this, say so here. Honest disclosure is the
-standard in this course and increasingly outside it, and reporting heavy use
-accurately costs you nothing.
-
-This section is the last 10 points of the finals badge, and it wants three
-things:
-
 ![Built with AI assistance](https://img.shields.io/badge/built%20with-AI%20assistance-0b5fff)
 
-- the badge above, or one you like better
-- a line naming which assistant you used and how much of the work it touched
-- a link to [AI-USAGE.md](AI-USAGE.md), where the full account lives
-
-Keep the detail in `AI-USAGE.md` rather than here. This section is the summary a
-visitor reads; that file is the record the badge is graded from.
+AI tools were used to assist with project structure, Flutter development, code refinement, documentation, and troubleshooting. The project is still developed and reviewed by the author. See [`AI-USAGE.md`](./AI-USAGE.md), where the full account lives.
 
 ## Licence
 
