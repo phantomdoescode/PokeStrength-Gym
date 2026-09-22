@@ -1,8 +1,8 @@
 # Every Flutter project has one of these. It names your app, sets the Dart
 # version it needs, and lists the packages you depend on.
 # Add a package with: flutter pub add <name>
-name: final_project
-description: My 6ADET final project.
+name: pokestrength_gym
+description: A Pokémon-inspired fitness tracker for university students, gym members, and Pokémon fans.
 publish_to: "none"
 version: 1.0.0+1
 
@@ -12,6 +12,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  
+  # Provides standard icons for iOS apps. The package is maintained by the Flutter team and is included in the Flutter SDK.
   cupertino_icons: ^1.0.9
   # Lets you preview the app inside a phone frame while you develop in a
   # browser. It is switched off automatically in a release build.
