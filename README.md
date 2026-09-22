@@ -58,7 +58,7 @@ PokeStrength-Gym/
 | --- | --- |
 | Framework | Flutter (Dart) |
 | State | `setState` and controller classes |
-| Storage | shared_preferences |
+| Storage | `shared_preferences` |
 | Other packages | `device_preview` for phone-sized development previews; `fl_chart` for planned workout and XP progress charts |
 
 ## Running it yourself
@@ -101,7 +101,7 @@ Future improvements may include Pokémon Gym Challenges, leaderboards and monthl
 
 ## Credits
 
-- Packages: see `pubspec.yaml`
+- Packages: see [`pubspec.yaml`](./pubspec.yaml)
 - Assets, icons, 3D models, sounds: (tentative)
 - People who helped: (tentative)
 
