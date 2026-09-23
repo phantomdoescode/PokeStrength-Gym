@@ -49,7 +49,7 @@ class Member {
 
   // Converts the Member object into a Map so it can
   // later be converted into JSON for storage (shared_preferences).
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toJson() {
     return {
       'id': id,
       'name': name,
@@ -64,7 +64,7 @@ class Member {
   }
 
   // Recontructs a Member object from data stored in shared_preferences.
-  factory Member.fromMap(Map<String, dynamic> json) {
+  factory Member.fromJson(Map<String, dynamic> json) {
     return Member(
       id: json['id'] as String,
       name: json['name'] as String,
