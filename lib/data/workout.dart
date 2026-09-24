@@ -40,16 +40,17 @@ class Workout {
   // Converts saved JSON data back into a Workout object.
   factory Workout.fromJson(Map<String, dynamic> json) {
     return Workout(
-        id json['id'] as String,
-        exerciseName: json['exerciseName'] as String,
-        category: json['category'] as String,
-        sets: json['sets'] as int,
-        reps: json['reps'] as int,
-        duration: json['duration'] as int,
-        caloriesBurned: json['caloriesBurned'] as int,
-        completionDate: json['completionDate'] == null 
-            ? null : DateTime.parse(json['completionDate'] as String),
-        isCompleted: json['isCompleted'] as bool ?? false,
+      id: json['id'] as String,
+      exerciseName: json['exerciseName'] as String,
+      category: json['category'] as String,
+      sets: json['sets'] as int,
+      reps: json['reps'] as int,
+      duration: json['duration'] as int,
+      caloriesBurned: json['caloriesBurned'] as int,
+      completionDate: json['completionDate'] == null
+          ? null
+          : DateTime.parse(json['completionDate'] as String),
+      isCompleted: json['isCompleted'] as bool ?? false,
     );
   }
 }
