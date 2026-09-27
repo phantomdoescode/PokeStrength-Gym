@@ -1,27 +1,30 @@
 import 'package:flutter/foundation.dart';
+
 import '../data/pokemon_reward.dart';
 import '../services/storage_service.dart';
 
 class RewardsController extends ChangeNotifier {
   List<PokemonReward> _rewards = [];
+
   List<PokemonReward> get rewards => List.unmodifiable(_rewards);
 
   // Loads the saved Pokémon collection.
-  // Sample rewards are created on the first launch
-
   Future<void> initialize() async {
     _rewards = await StorageService.loadRewards();
 
     if (_rewards.isEmpty) {
       _rewards = _createSampleRewards();
+
       await StorageService.saveRewards(_rewards);
     }
+
     notifyListeners();
   }
 
   // Adds a new Pokémon reward to the collection.
   Future<void> addReward(PokemonReward reward) async {
     _rewards.add(reward);
+
     await StorageService.saveRewards(_rewards);
 
     notifyListeners();

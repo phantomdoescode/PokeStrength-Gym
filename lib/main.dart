@@ -48,6 +48,7 @@ class MyApp extends StatelessWidget {
       // design system instead of defining colors on every screen.
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
+      themeMode: ThemeMode.system,
 
       // SplashScreen as the first screen that shows up.
       home: const SplashScreen(),

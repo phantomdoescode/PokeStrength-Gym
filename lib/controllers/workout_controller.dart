@@ -1,11 +1,15 @@
 import 'package:flutter/foundation.dart';
+
 import '../data/workout.dart';
 import '../services/storage_service.dart';
 
 class WorkoutController extends ChangeNotifier {
   List<Workout> _workouts = [];
+
   List<Workout> get workouts => List.unmodifiable(_workouts);
+
   int get totalWorkouts => _workouts.length;
+
   int get completedWorkouts =>
       _workouts.where((workout) => workout.isCompleted).length;
 

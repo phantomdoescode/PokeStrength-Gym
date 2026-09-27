@@ -1,14 +1,22 @@
 import 'package:flutter/foundation.dart';
+
 import '../data/member.dart';
 import '../services/storage_service.dart';
 
 class TrainerController extends ChangeNotifier {
   Member? _member;
+
   bool _isLoading = true;
+
   Member? get member => _member;
+
   bool get isLoading => _isLoading;
 
   // Initializes the trainer data when the application starts.
+  //
+  // Since PokéStrength Gym is a single-user application and does not
+  // require authentication, a starter trainer profile is created when
+  // no saved profile exists yet.
   Future<void> initialize() async {
     _isLoading = true;
     notifyListeners();
@@ -29,6 +37,7 @@ class TrainerController extends ChangeNotifier {
         totalXp: 3250,
         currentLevel: 12,
       );
+
       await StorageService.saveMember(_member!);
     }
 
@@ -49,6 +58,7 @@ class TrainerController extends ChangeNotifier {
       totalXp: 0,
       currentLevel: 1,
     );
+
     await StorageService.saveMember(_member!);
 
     notifyListeners();
@@ -74,6 +84,7 @@ class TrainerController extends ChangeNotifier {
       weight: weight,
       fitnessLevel: fitnessLevel,
     );
+
     await StorageService.saveMember(_member!);
 
     notifyListeners();
@@ -95,6 +106,7 @@ class TrainerController extends ChangeNotifier {
       totalXp: newXp,
       currentLevel: _member!.currentLevel + additionalLevels,
     );
+
     await StorageService.saveMember(_member!);
 
     notifyListeners();
@@ -107,6 +119,7 @@ class TrainerController extends ChangeNotifier {
     }
 
     _member = _member!.copyWith(workoutStreak: _member!.workoutStreak + 1);
+
     await StorageService.saveMember(_member!);
 
     notifyListeners();
