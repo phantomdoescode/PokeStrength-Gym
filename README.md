@@ -7,6 +7,9 @@
 - **Course:** Applications Development and Emerging Technologies (6ADET), Holy Angel University
 - **Author:** Kayama, Masaharu (phantomdoescode)
 
+## Security Checklist
+View the Security Checklist through here: [Security Checklist](https://github.com/HAU-6ADET/student-6ADET-2134-masaharukayama/blob/main/project/SECURITY-CHECKLIST.md)
+
 ## Project Structure
 
 ```yaml
