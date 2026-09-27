@@ -17,7 +17,7 @@ class TrainerAvatar extends StatelessWidget {
       ),
       child: ClipOval(
         child: Image.asset(
-          'assets/images/trainer_avatar.png',
+          'docs/assets/images/trainer_avatar.png',
           fit: BoxFit.cover,
         ),
       ),

@@ -42,7 +42,7 @@ class _SplashScreenState extends State<SplashScreen> {
               width: 180,
               height: 110,
               child: Image.asset(
-                'assets/images/pokestrength_logo.png',
+                'docs/assets/images/pokestrength_logo.png',
                 fit: BoxFit.contain,
               ),
             ),

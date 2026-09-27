@@ -29,22 +29,22 @@ class _WorkoutTrackerScreenState extends State<WorkoutTrackerScreen> {
     _ExerciseItem(
       name: 'Push Ups',
       details: '3 sets × 15 reps',
-      imagePath: 'assets/images/push_ups.png',
+      imagePath: 'docs/assets/images/push_ups.png',
     ),
     _ExerciseItem(
       name: 'Squats',
       details: '4 sets × 12 reps',
-      imagePath: 'assets/images/squats.png',
+      imagePath: 'docs/assets/images/squats.png',
     ),
     _ExerciseItem(
       name: 'Bench Press',
       details: '3 sets × 10 reps',
-      imagePath: 'assets/images/bench_press.png',
+      imagePath: 'docs/assets/images/bench_press.png',
     ),
     _ExerciseItem(
       name: 'Plank',
       details: '3 sets × 45 sec',
-      imagePath: 'assets/images/plank.png',
+      imagePath: 'docs/assets/images/plank.png',
     ),
   ];
 

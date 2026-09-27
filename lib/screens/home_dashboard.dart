@@ -156,7 +156,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                       height: 138,
                       width: double.infinity,
                       child: Image.asset(
-                        'assets/images/upper_body_blast.png',
+                        'docs/assets/images/upper_body_blast.png',
                         fit: BoxFit.cover,
                       ),
                     ),

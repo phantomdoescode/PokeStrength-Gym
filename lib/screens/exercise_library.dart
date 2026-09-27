@@ -15,19 +15,19 @@ class _ExerciseLibraryScreenState extends State<ExerciseLibraryScreen> {
       name: 'Chest Workouts',
       count: 24,
       bonus: 'ATTACK +15',
-      imagePath: 'assets/images/chest_workouts.png',
+      imagePath: 'docs/assets/images/chest_workouts.png',
     ),
     _MuscleGroup(
       name: 'Arm Workouts',
       count: 18,
       bonus: 'POWER +18',
-      imagePath: 'assets/images/arm_workouts.png',
+      imagePath: 'docs/assets/images/arm_workouts.png',
     ),
     _MuscleGroup(
       name: 'Leg Workouts',
       count: 22,
       bonus: 'DEFENSE +20',
-      imagePath: 'assets/images/leg_workouts.png',
+      imagePath: 'docs/assets/images/leg_workouts.png',
     ),
   ];
 

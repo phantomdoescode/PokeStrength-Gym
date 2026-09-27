@@ -48,7 +48,7 @@ class TrainerProfileScreen extends StatelessWidget {
                   width: 145,
                   height: 75,
                   child: Image.asset(
-                    'assets/images/pokestrength_logo.png',
+                    'docs/assets/images/pokestrength_logo.png',
                     fit: BoxFit.contain,
                   ),
                 ),
@@ -76,7 +76,7 @@ class TrainerProfileScreen extends StatelessWidget {
                   ),
                   child: ClipOval(
                     child: Image.asset(
-                      'assets/images/trainer_avatar.png',
+                      'docs/assets/images/trainer_avatar.png',
                       fit: BoxFit.cover,
                     ),
                   ),
