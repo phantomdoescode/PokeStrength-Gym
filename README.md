@@ -31,9 +31,9 @@ PokeStrength-Gym/
 ## Screenshots
 
 ```markdown
-| Home | Detail | Add |
+| Dashboard | Active Workout | Library | Rewards Vault | Trainer Card | 
 | --- | --- | --- |
-| ![Home](docs/assets/screen-home.png) | ![Detail](docs/assets/screen-detail.png) | ![Add](docs/assets/screen-add.png) |
+| ![Home](docs/assets/screen-home.png) | ![Detail](docs/assets/screen-workout.png) | ![Add](docs/assets/screen-library.png) | ![Detail](docs/assets/screen-rewards.png) | ![Add](docs/assets/screen-card.png) |
 ```
 
 ## What it does
