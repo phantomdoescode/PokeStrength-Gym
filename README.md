@@ -29,6 +29,7 @@ PokeStrength-Gym/
 ---
 
 ## Screenshots
+**Might change in future commits**
 
 | Dashboard | Active Workout | Library | Rewards Vault | Trainer Card | 
 | --- | --- | --- | --- | --- |
