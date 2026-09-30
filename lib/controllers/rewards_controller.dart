@@ -1,73 +1,119 @@
 import 'package:flutter/foundation.dart';
-
+import '../data/pokemon_catalog.dart';
 import '../data/pokemon_reward.dart';
 import '../services/storage_service.dart';
 
 class RewardsController extends ChangeNotifier {
-  List<PokemonReward> _rewards = [];
+  List<PokemonReward> rewards = [];
+  bool isLoading = false;
 
-  List<PokemonReward> get rewards => List.unmodifiable(_rewards);
-
-  // Loads the saved Pokémon collection.
   Future<void> initialize() async {
-    _rewards = await StorageService.loadRewards();
+    isLoading = true;
+    notifyListeners();
 
-    if (_rewards.isEmpty) {
-      _rewards = _createSampleRewards();
+    rewards = await StorageService.loadRewards();
 
-      await StorageService.saveRewards(_rewards);
+    // Remove duplicate Pokémon from older saved data.
+    rewards = _removeDuplicates(rewards);
+
+    if (rewards.isEmpty) {
+      // Keep the rewards shown in the original mockup.
+      rewards = [
+        PokemonReward(
+          id: 'reward-001',
+          pokemonName: 'Pikachu',
+          pokemonType: 'Electric',
+          xpEarned: 500,
+          gymBadge: 'Voltage Badge',
+          achievement: 'Starter Companion',
+          rarity: 'Common',
+        ),
+        PokemonReward(
+          id: 'reward-002',
+          pokemonName: 'Squirtle',
+          pokemonType: 'Water',
+          xpEarned: 200,
+          gymBadge: 'Aqua Badge',
+          achievement: 'Hydration Hero',
+          rarity: 'Uncommon',
+        ),
+        PokemonReward(
+          id: 'reward-003',
+          pokemonName: 'Charmander',
+          pokemonType: 'Fire',
+          xpEarned: 350,
+          gymBadge: 'Blaze Badge',
+          achievement: 'Heat Seeker',
+          rarity: 'Uncommon',
+        ),
+        PokemonReward(
+          id: 'reward-004',
+          pokemonName: 'Machop',
+          pokemonType: 'Fighting',
+          xpEarned: 800,
+          gymBadge: 'Power Badge',
+          achievement: 'Strength Trainer',
+          rarity: 'Rare',
+        ),
+      ];
+
+      rewards = _removeDuplicates(rewards);
     }
 
+    // Saves the cleaned list so old duplicate entries are removed
+    // from SharedPreferences as well.
+    await StorageService.saveRewards(rewards);
+
+    isLoading = false;
     notifyListeners();
   }
 
-  // Adds a new Pokémon reward to the collection.
-  Future<void> addReward(PokemonReward reward) async {
-    _rewards.add(reward);
+  List<PokemonReward> _removeDuplicates(List<PokemonReward> source) {
+    final seen = <String>{};
+    final unique = <PokemonReward>[];
 
-    await StorageService.saveRewards(_rewards);
+    for (final reward in source) {
+      final key = reward.pokemonName.trim().toLowerCase();
 
-    notifyListeners();
+      if (seen.add(key)) {
+        unique.add(reward);
+      }
+    }
+
+    return unique;
   }
 
-  List<PokemonReward> _createSampleRewards() {
-    return const [
-      PokemonReward(
-        id: 'reward-1',
-        pokemonName: 'Pikachu',
-        pokemonType: 'Electric',
-        xpEarned: 500,
-        gymBadge: '7-Day Streak',
-        achievement: 'First Week',
-        rarity: 'Common',
-      ),
-      PokemonReward(
-        id: 'reward-2',
-        pokemonName: 'Squirtle',
-        pokemonType: 'Water',
-        xpEarned: 200,
-        gymBadge: 'First Workout',
-        achievement: 'First Workout',
-        rarity: 'Uncommon',
-      ),
-      PokemonReward(
-        id: 'reward-3',
-        pokemonName: 'Charmander',
-        pokemonType: 'Fire',
-        xpEarned: 350,
-        gymBadge: '1000 XP Club',
-        achievement: 'Fire Up',
-        rarity: 'Uncommon',
-      ),
-      PokemonReward(
-        id: 'reward-4',
-        pokemonName: 'Machop',
-        pokemonType: 'Fighting',
-        xpEarned: 800,
-        gymBadge: '1000 XP Club',
-        achievement: 'Strength Training',
-        rarity: 'Rare',
-      ),
-    ];
+  bool hasReward(String pokemonName) {
+    return rewards.any(
+      (reward) => reward.pokemonName.toLowerCase() == pokemonName.toLowerCase(),
+    );
+  }
+
+  Future<bool> addReward(PokemonReward reward) async {
+    // Prevent the same Pokémon from being added again.
+    if (hasReward(reward.pokemonName)) {
+      return false;
+    }
+
+    rewards.add(reward);
+
+    await StorageService.saveRewards(rewards);
+    notifyListeners();
+
+    return true;
+  }
+
+  // Finds the next Pokémon from the 151-Pokémon catalog
+  // that the trainer has not collected yet.
+  Future<PokemonReward?> unlockNextPokemon() async {
+    for (final pokemon in PokemonCatalog.rewards) {
+      if (!hasReward(pokemon.pokemonName)) {
+        await addReward(pokemon);
+        return pokemon;
+      }
+    }
+
+    // The complete 151-Pokémon collection is already unlocked.
+    return null;
   }
 }

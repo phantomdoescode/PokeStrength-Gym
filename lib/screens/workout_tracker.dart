@@ -129,21 +129,9 @@ class _WorkoutTrackerScreenState extends State<WorkoutTrackerScreen> {
     // Award trainer XP.
     await widget.trainerController.addXp(100);
 
-    // Increase the trainer streak.
-    await widget.trainerController.increaseWorkoutStreak();
-
-    // Add a new reward after the workout.
-    final reward = PokemonReward(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
-      pokemonName: 'Pikachu',
-      pokemonType: 'Electric',
-      xpEarned: 100,
-      gymBadge: 'Workout Badge',
-      achievement: 'Workout Completed',
-      rarity: 'Common',
-    );
-
-    await widget.rewardsController.addReward(reward);
+    // Unlock the next Pokémon that the trainer does not already own.
+    // This prevents duplicate reward cards after repeated workouts.
+    await widget.rewardsController.unlockNextPokemon();
 
     if (!mounted) {
       return;

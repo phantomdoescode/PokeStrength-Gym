@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+
 import '../controllers/navigation_controller.dart';
 import '../controllers/rewards_controller.dart';
 import '../controllers/trainer_controller.dart';
 import '../controllers/workout_controller.dart';
 import '../widgets/app_bottom_nav.dart';
+import '../widgets/primary_button.dart';
 import '../widgets/reward_card.dart';
 import '../widgets/trainer_avatar.dart';
 import '../widgets/xp_progress_bar.dart';
@@ -21,11 +23,8 @@ class HomeDashboardScreen extends StatefulWidget {
 
 class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
   final NavigationController _navigationController = NavigationController();
-
   final TrainerController _trainerController = TrainerController();
-
   final WorkoutController _workoutController = WorkoutController();
-
   final RewardsController _rewardsController = RewardsController();
 
   bool _isLoading = true;
@@ -79,6 +78,11 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
           return const Center(child: CircularProgressIndicator());
         }
 
+        // Only show the first two collected Pokémon on
+        // the Home Dashboard. The complete collection is
+        // shown in the Rewards Vault.
+        final nearbyRewards = _rewardsController.rewards.take(2).toList();
+
         return SafeArea(
           child: ListView(
             physics: const BouncingScrollPhysics(),
@@ -121,7 +125,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Theme.of(context).colorScheme.surface,
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(color: const Color(0xFFE6E6E6)),
                 ),
@@ -134,6 +138,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
 
               const SizedBox(height: 20),
 
+              // Today's Active Mission.
               const Text(
                 "Today's Active Mission",
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
@@ -144,7 +149,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
               // Upper Body Blast card from the mockup.
               Container(
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Theme.of(context).colorScheme.surface,
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(color: const Color(0xFFE6E6E6)),
                 ),
@@ -158,6 +163,13 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                       child: Image.asset(
                         'docs/assets/images/upper_body_blast.png',
                         fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Container(
+                            color: Colors.grey.shade200,
+                            alignment: Alignment.center,
+                            child: const Icon(Icons.fitness_center, size: 48),
+                          );
+                        },
                       ),
                     ),
 
@@ -216,6 +228,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
 
               const SizedBox(height: 20),
 
+              // Rewards Nearby header.
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -223,6 +236,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                     'Rewards Nearby',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
+
                   GestureDetector(
                     onTap: () {
                       _navigationController.setIndex(3);
@@ -241,36 +255,53 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
 
               const SizedBox(height: 10),
 
-              // Two nearby rewards, as shown in the mockup.
-              Row(
-                children: [
-                  Expanded(
-                    child: SizedBox(
-                      height: 105,
-                      child: RewardCard(
-                        pokemonName: 'Pikachu',
-                        type: 'Electric',
-                        rarity: 'Common',
-                        xpEarned: 500,
-                        accentColor: const Color(0xFFFFD43D),
-                      ),
-                    ),
+              // Nearby rewards.
+              //
+              // The previous version used a fixed-height
+              // SizedBox(height: 105), which caused the
+              // RenderFlex overflow. The cards now size
+              // themselves naturally.
+              if (nearbyRewards.isEmpty)
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surface,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: const Color(0xFFE6E6E6)),
                   ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: SizedBox(
-                      height: 105,
-                      child: RewardCard(
-                        pokemonName: 'Squirtle',
-                        type: 'Water',
-                        rarity: 'Uncommon',
-                        xpEarned: 200,
-                        accentColor: const Color(0xFF27AEEF),
-                      ),
-                    ),
+                  child: const Text(
+                    'No Pokémon rewards yet.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 11, color: Color(0xFF666666)),
                   ),
-                ],
-              ),
+                )
+              else
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    for (
+                      int index = 0;
+                      index < nearbyRewards.length;
+                      index++
+                    ) ...[
+                      Expanded(
+                        child: RewardCard(
+                          pokemonName: nearbyRewards[index].pokemonName,
+                          type: nearbyRewards[index].pokemonType,
+                          rarity: nearbyRewards[index].rarity,
+                          xpEarned: nearbyRewards[index].xpEarned,
+                          accentColor: index.isEven
+                              ? const Color(0xFFFFD43D)
+                              : const Color(0xFF27AEEF),
+                          compact: true,
+                        ),
+                      ),
+
+                      if (index != nearbyRewards.length - 1)
+                        const SizedBox(width: 10),
+                    ],
+                  ],
+                ),
             ],
           ),
         );
@@ -322,6 +353,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
       builder: (context, _) {
         return Scaffold(
           body: _buildCurrentScreen(),
+
           bottomNavigationBar: AppBottomNav(
             currentIndex: _navigationController.currentIndex,
             onDestinationSelected: _navigationController.setIndex,
