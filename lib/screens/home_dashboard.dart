@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import '../controllers/navigation_controller.dart';
 import '../controllers/rewards_controller.dart';
 import '../controllers/trainer_controller.dart';
@@ -256,11 +255,6 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
               const SizedBox(height: 10),
 
               // Nearby rewards.
-              //
-              // The previous version used a fixed-height
-              // SizedBox(height: 105), which caused the
-              // RenderFlex overflow. The cards now size
-              // themselves naturally.
               if (nearbyRewards.isEmpty)
                 Container(
                   padding: const EdgeInsets.all(20),
