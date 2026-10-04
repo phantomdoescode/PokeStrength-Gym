@@ -3,7 +3,7 @@
 > For university students, gym members, and Pokémon fans looking for a more engaging way to track workouts through XP progression, achievements, and collectible rewards.
 
 - **Live demo:** https://phantomdoescode.github.io/PokeStrength-Gym/ <!-- GitHub Pages is set up already; replace if you host elsewhere -->
-- **Demo video:** `docs/demo.mp4` (link it here once it exists)
+- **Demo video:** [Video Presentation in Google Drive](https://drive.google.com/file/d/1FlAKTZdCc0SYbAOWGxSuMvIU4wZRxQso/view?usp=drive_link)
 - **Course:** Applications Development and Emerging Technologies (6ADET), Holy Angel University
 - **Author:** Kayama, Masaharu (phantomdoescode)
 
