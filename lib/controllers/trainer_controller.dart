@@ -1,70 +1,68 @@
 import 'package:flutter/foundation.dart';
-
 import '../data/member.dart';
 import '../services/storage_service.dart';
 
 class TrainerController extends ChangeNotifier {
-  Member? _member;
+  // XP required to reach the next level.
+  static const int xpPerLevel = 2500;
 
-  bool _isLoading = true;
+  Member? member;
+  bool isLoading = false;
 
-  Member? get member => _member;
-
-  bool get isLoading => _isLoading;
-
-  // Initializes the trainer data when the application starts.
-  //
-  // Since PokéStrength Gym is a single-user application and does not
-  // require authentication, a starter trainer profile is created when
-  // no saved profile exists yet.
   Future<void> initialize() async {
-    _isLoading = true;
+    isLoading = true;
     notifyListeners();
 
-    _member = await StorageService.loadMember();
+    member = await StorageService.loadMember();
 
-    if (_member == null) {
-      // Sample trainer information is used so the first launch
-      // resembles the project's Figma mockup.
-      _member = Member(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
+    if (member == null) {
+      // Starter profile.
+      member = Member(
+        id: 'trainer-001',
         name: 'Masaharu Kayama',
         age: 18,
         height: 170,
         weight: 65,
         fitnessLevel: 'Beginner',
         workoutStreak: 7,
-        totalXp: 3250,
-        currentLevel: 12,
+        totalXp: 400,
+        currentLevel: 1,
       );
 
-      await StorageService.saveMember(_member!);
+      await StorageService.saveMember(member!);
+    } else if (member!.currentLevel == 12 && member!.totalXp == 3250) {
+      member = member!.copyWith(totalXp: 400, currentLevel: 1);
+      await StorageService.saveMember(member!);
     }
 
-    _isLoading = false;
+    isLoading = false;
     notifyListeners();
   }
 
-  // Creates a new trainer profile.
-  Future<void> createTrainer(String name) async {
-    _member = Member(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
+  Future<void> createTrainer({
+    required String name,
+    required int age,
+    required double height,
+    required double weight,
+    required String fitnessLevel,
+  }) async {
+    member = Member(
+      id: 'trainer-001',
       name: name,
-      age: 18,
-      height: 170,
-      weight: 65,
-      fitnessLevel: 'Beginner',
+      age: age,
+      height: height,
+      weight: weight,
+      fitnessLevel: fitnessLevel,
       workoutStreak: 0,
       totalXp: 0,
       currentLevel: 1,
     );
 
-    await StorageService.saveMember(_member!);
+    await StorageService.saveMember(member!);
 
     notifyListeners();
   }
 
-  // Updates the trainer information entered on the Edit Trainer Card screen.
   Future<void> updateProfile({
     required String name,
     required int age,
@@ -72,12 +70,11 @@ class TrainerController extends ChangeNotifier {
     required double weight,
     required String fitnessLevel,
   }) async {
-    if (_member == null) {
+    if (member == null) {
       return;
     }
 
-    // copyWith preserves the trainer's ID, XP, level, and streak.
-    _member = _member!.copyWith(
+    member = member!.copyWith(
       name: name,
       age: age,
       height: height,
@@ -85,42 +82,39 @@ class TrainerController extends ChangeNotifier {
       fitnessLevel: fitnessLevel,
     );
 
-    await StorageService.saveMember(_member!);
+    await StorageService.saveMember(member!);
 
     notifyListeners();
   }
 
-  // Adds XP after successfully completing a workout.
   Future<void> addXp(int amount) async {
-    if (_member == null) {
+    if (member == null || amount <= 0) {
       return;
     }
 
-    final newXp = _member!.totalXp + amount;
+    var currentXp = member!.totalXp + amount;
+    var currentLevel = member!.currentLevel;
 
-    // The current MVP uses a 5,000 XP level threshold.
-    // The trainer level increases whenever another 5,000 XP is reached.
-    final additionalLevels = newXp ~/ 5000 - _member!.totalXp ~/ 5000;
+    while (currentXp >= xpPerLevel) {
+      currentXp -= xpPerLevel;
+      currentLevel++;
+    }
 
-    _member = _member!.copyWith(
-      totalXp: newXp,
-      currentLevel: _member!.currentLevel + additionalLevels,
-    );
+    member = member!.copyWith(totalXp: currentXp, currentLevel: currentLevel);
 
-    await StorageService.saveMember(_member!);
+    await StorageService.saveMember(member!);
 
     notifyListeners();
   }
 
-  // Increases the trainer's workout streak after a completed workout.
   Future<void> increaseWorkoutStreak() async {
-    if (_member == null) {
+    if (member == null) {
       return;
     }
 
-    _member = _member!.copyWith(workoutStreak: _member!.workoutStreak + 1);
+    member = member!.copyWith(workoutStreak: member!.workoutStreak + 1);
 
-    await StorageService.saveMember(_member!);
+    await StorageService.saveMember(member!);
 
     notifyListeners();
   }

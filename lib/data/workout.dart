@@ -50,7 +50,7 @@ class Workout {
       completionDate: json['completionDate'] == null
           ? null
           : DateTime.parse(json['completionDate'] as String),
-      isCompleted: json['isCompleted'] as bool ?? false,
+      isCompleted: (json['isCompleted'] as bool?) ?? false,
     );
   }
 }

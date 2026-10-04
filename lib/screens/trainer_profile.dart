@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../controllers/rewards_controller.dart';
 import '../controllers/trainer_controller.dart';
 import '../controllers/workout_controller.dart';
+import '../theme/app_theme.dart';
+import '../widgets/app_logo.dart';
 import 'edit_profile.dart';
 
 class TrainerProfileScreen extends StatelessWidget {
@@ -33,8 +35,7 @@ class TrainerProfileScreen extends StatelessWidget {
           );
         }
 
-        final totalWorkouts = workoutController.totalWorkouts;
-
+        final totalWorkouts = workoutController.totalCompletedWorkouts;
         final pokemonCount = rewardsController.rewards.length;
 
         return SafeArea(
@@ -47,10 +48,7 @@ class TrainerProfileScreen extends StatelessWidget {
                 child: SizedBox(
                   width: 145,
                   height: 75,
-                  child: Image.asset(
-                    'docs/assets/images/pokestrength_logo.png',
-                    fit: BoxFit.contain,
-                  ),
+                  child: AppLogo(width: 150),
                 ),
               ),
 
@@ -87,17 +85,13 @@ class TrainerProfileScreen extends StatelessWidget {
 
               Container(
                 padding: const EdgeInsets.all(14),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: const Color(0xFFE6E6E6)),
-                ),
+                decoration: AppTheme.cardDecoration(context, radius: 10),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       member.name,
-                      style: const TextStyle(
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         fontSize: 15,
                         fontWeight: FontWeight.bold,
                       ),
@@ -122,24 +116,22 @@ class TrainerProfileScreen extends StatelessWidget {
                       valueColor: const Color(0xFF43A047),
                     ),
 
-                    const SizedBox(height: 10),
-
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
                           'Level ${member.currentLevel}',
-                          style: const TextStyle(
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
-                          ),
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                              ),
                         ),
                         Text(
-                          '${member.totalXp} / 5000 XP',
-                          style: const TextStyle(
-                            fontSize: 9,
-                            color: Color(0xFF666666),
-                          ),
+                          '${member.totalXp} / ${TrainerController.xpPerLevel} XP',
+                          style: Theme.of(
+                            context,
+                          ).textTheme.bodySmall?.copyWith(fontSize: 9),
                         ),
                       ],
                     ),
@@ -149,10 +141,13 @@ class TrainerProfileScreen extends StatelessWidget {
                     ClipRRect(
                       borderRadius: BorderRadius.circular(8),
                       child: LinearProgressIndicator(
-                        value: (member.totalXp % 5000) / 5000,
+                        value: (member.totalXp / TrainerController.xpPerLevel)
+                            .clamp(0.0, 1.0),
                         minHeight: 8,
                         color: const Color(0xFFFFD54F),
-                        backgroundColor: const Color(0xFFE9E9E9),
+                        backgroundColor: Theme.of(
+                          context,
+                        ).colorScheme.surfaceContainerHighest,
                       ),
                     ),
                   ],
@@ -176,7 +171,7 @@ class TrainerProfileScreen extends StatelessWidget {
                     child: _StatCard(
                       value: '${member.totalXp}',
                       label: 'Total XP',
-                      color: const Color(0xFF212121),
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -240,14 +235,14 @@ class _InfoRow extends StatelessWidget {
       children: [
         Text(
           label,
-          style: const TextStyle(fontSize: 10, color: Color(0xFF666666)),
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(fontSize: 10),
         ),
         Text(
           value,
-          style: TextStyle(
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
             fontSize: 10,
             fontWeight: FontWeight.bold,
-            color: valueColor,
+            color: valueColor ?? Theme.of(context).colorScheme.onSurface,
           ),
         ),
       ],
@@ -270,11 +265,7 @@ class _StatCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: 68,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(9),
-        border: Border.all(color: const Color(0xFFE6E6E6)),
-      ),
+      decoration: AppTheme.cardDecoration(context, radius: 9),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -289,7 +280,7 @@ class _StatCard extends StatelessWidget {
           const SizedBox(height: 2),
           Text(
             label,
-            style: const TextStyle(fontSize: 8, color: Color(0xFF666666)),
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(fontSize: 8),
           ),
         ],
       ),

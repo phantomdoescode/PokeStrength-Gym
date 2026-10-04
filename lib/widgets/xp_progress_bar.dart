@@ -14,11 +14,24 @@ class XpProgressBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Only the XP within the current level is used for the
-    // progress indicator.
-    final currentLevelXp = currentXp % nextLevelXp;
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
 
-    final progress = (currentLevelXp / nextLevelXp).clamp(0.0, 1.0);
+    final progress = nextLevelXp <= 0
+        ? 0.0
+        : (currentXp / nextLevelXp).clamp(0.0, 1.0);
+
+    final backgroundColor = isDark
+        ? const Color(0xFF3A3A3A)
+        : const Color(0xFFE6E6E6);
+
+    final primaryText = isDark
+        ? const Color(0xFFF5F5F5)
+        : const Color(0xFF212121);
+
+    final secondaryText = isDark
+        ? const Color(0xFFBDBDBD)
+        : const Color(0xFF616161);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -26,52 +39,45 @@ class XpProgressBar extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Row(
-              children: [
-                const Icon(
-                  Icons.star_border,
-                  size: 19,
-                  color: Color(0xFFFFC928),
-                ),
-                const SizedBox(width: 6),
-                Text(
-                  'Trainer Level Progress',
-                  style: Theme.of(
-                    context,
-                  ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
-                ),
-              ],
+            Text(
+              'Trainer Level Progress',
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w700,
+                color: primaryText,
+              ),
             ),
 
             Text(
-              '$currentLevelXp / $nextLevelXp XP',
-              style: Theme.of(context).textTheme.labelSmall,
+              'Level $level',
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+                color: secondaryText,
+              ),
             ),
           ],
         ),
 
-        const SizedBox(height: 10),
+        const SizedBox(height: 8),
 
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Level $level',
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
-            ),
-          ],
+        ClipRRect(
+          borderRadius: BorderRadius.circular(12),
+          child: LinearProgressIndicator(
+            value: progress,
+            minHeight: 10,
+
+            backgroundColor: backgroundColor,
+
+            valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFFFFD54F)),
+          ),
         ),
 
         const SizedBox(height: 6),
 
-        ClipRRect(
-          borderRadius: BorderRadius.circular(10),
-          child: LinearProgressIndicator(
-            value: progress,
-            minHeight: 8,
-            color: const Color(0xFFFFD54F),
-            backgroundColor: const Color(0xFFE8E8E8),
-          ),
+        Text(
+          '$currentXp / $nextLevelXp XP',
+          style: TextStyle(fontSize: 12, color: secondaryText),
         ),
       ],
     );

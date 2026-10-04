@@ -167,29 +167,216 @@ class PokemonCatalog {
     PokemonCatalogEntry(number: 151, name: 'Mew', type: 'Psychic'),
   ];
 
+  // Legendary Pokémon
+  static const Set<int> legendaryNumbers = {
+    144, // Articuno
+    145, // Zapdos
+    146, // Moltres
+    150, // Mewtwo
+    151, // Mew
+  };
+
+  // Pre-Evolution / Baby Pokémon
+  static const Set<int> preEvolutionNumbers = {
+    1, // Bulbasaur
+    4, // Charmander
+    7, // Squirtle
+    10, // Caterpie
+    13, // Weedle
+    16, // Pidgey
+    19, // Rattata
+    21, // Spearow
+    23, // Ekans
+    25, // Pikachu
+    27, // Sandshrew
+    29, // Nidoran♀
+    32, // Nidoran♂
+    35, // Clefairy
+    37, // Vulpix
+    39, // Jigglypuff
+    41, // Zubat
+    43, // Oddish
+    46, // Paras
+    48, // Venonat
+    50, // Diglett
+    52, // Meowth
+    54, // Psyduck
+    56, // Mankey
+    58, // Growlithe
+    60, // Poliwag
+    63, // Abra
+    66, // Machop
+    69, // Bellsprout
+    72, // Tentacool
+    74, // Geodude
+    77, // Ponyta
+    79, // Slowpoke
+    81, // Magnemite
+    84, // Doduo
+    86, // Seel
+    88, // Grimer
+    90, // Shellder
+    92, // Gastly
+    95, // Onix
+    96, // Drowzee
+    98, // Krabby
+    100, // Voltorb
+    102, // Exeggcute
+    104, // Cubone
+    108, // Lickitung
+    109, // Koffing
+    111, // Rhyhorn
+    114, // Tangela
+    116, // Horsea
+    118, // Goldeen
+    120, // Staryu
+    123, // Scyther
+    125, // Electabuzz
+    126, // Magmar
+    129, // Magikarp
+    133, // Eevee
+    137, // Porygon
+    138, // Omanyte
+    140, // Kabuto
+    147, // Dratini
+  };
+
+  // Middle Evolution Pokémon
+  static const Set<int> middleEvolutionNumbers = {
+    2, // Ivysaur
+    5, // Charmeleon
+    8, // Wartortle
+    11, // Metapod
+    14, // Kakuna
+    17, // Pidgeotto
+    30, // Nidorina
+    33, // Nidorino
+    42, // Golbat -> Crobat
+    44, // Gloom
+    61, // Poliwhirl
+    64, // Kadabra
+    67, // Machoke
+    70, // Weepinbell
+    75, // Graveler
+    82, // Magneton -> Magnezone
+    93, // Haunter
+    112, // Rhydon -> Rhyperior
+    113, // Chansey -> Blissey
+    117, // Seadra -> Kingdra
+    125, // Electabuzz -> Electivire
+    126, // Magmar -> Magmortar
+    148, // Dragonair
+  };
+
+  // Final Evolution Pokémon
+  static const Set<int> finalEvolutionNumbers = {
+    3, // Venusaur
+    6, // Charizard
+    9, // Blastoise
+    12, // Butterfree
+    15, // Beedrill
+    18, // Pidgeot
+    20, // Raticate
+    22, // Fearow
+    24, // Arbok
+    26, // Raichu
+    28, // Sandslash
+    31, // Nidoqueen
+    34, // Nidoking
+    36, // Clefable
+    38, // Ninetales
+    40, // Wigglytuff
+    45, // Vileplume
+    47, // Parasect
+    49, // Venomoth
+    51, // Dugtrio
+    53, // Persian
+    55, // Golduck
+    59, // Arcanine
+    62, // Poliwrath
+    65, // Alakazam
+    68, // Machamp
+    71, // Victreebel
+    73, // Tentacruel
+    76, // Golem
+    78, // Rapidash
+    80, // Slowbro
+    85, // Dodrio
+    87, // Dewgong
+    89, // Muk
+    91, // Cloyster
+    94, // Gengar
+    97, // Hypno
+    99, // Kingler
+    101, // Electrode
+    103, // Exeggutor
+    105, // Marowak
+    107, // Hitmonchan
+    106, // Hitmonlee
+    110, // Weezing
+    115, // Kangaskhan
+    119, // Seaking
+    121, // Starmie
+    122, // Mr. Mime
+    124, // Jynx
+    130, // Gyarados
+    131, // Lapras
+    132, // Ditto
+    134, // Vaporeon
+    135, // Jolteon
+    136, // Flareon
+    139, // Omastar
+    141, // Kabutops
+    142, // Aerodactyl
+    143, // Snorlax
+    149, // Dragonite
+  };
+
   static List<PokemonReward> get rewards {
     return entries.map(_createReward).toList();
   }
 
   static PokemonReward _createReward(PokemonCatalogEntry entry) {
-    final isLegendary = {144, 145, 146, 150, 151}.contains(entry.number);
+    final number = entry.number;
+    final isLegendary = legendaryNumbers.contains(number);
+    final isPreEvolution = preEvolutionNumbers.contains(number);
+    final isMiddleEvolution = middleEvolutionNumbers.contains(number);
+    String rarity;
 
-    final rarity = isLegendary
-        ? 'Legendary'
-        : entry.number % 5 == 0
-        ? 'Rare'
-        : entry.number % 2 == 0
-        ? 'Uncommon'
-        : 'Common';
+    if (isLegendary) {
+      rarity = 'Legendary';
+    } else if (isMiddleEvolution) {
+      rarity = 'Uncommon';
+    } else if (isPreEvolution) {
+      rarity = 'Common';
+    } else {
+      rarity = 'Rare';
+    }
+    final xpEarned = xpForRarity(rarity);
 
     return PokemonReward(
       id: 'pokemon-${entry.number.toString().padLeft(3, '0')}',
       pokemonName: entry.name,
       pokemonType: entry.type,
-      xpEarned: 100 + ((entry.number % 6) * 50),
+      xpEarned: xpEarned,
       gymBadge: '${entry.type.split('/').first} Badge',
       achievement: 'Pokémon Entry #${entry.number.toString().padLeft(3, '0')}',
       rarity: rarity,
     );
+  }
+
+  static int xpForRarity(String rarity) {
+    switch (rarity) {
+      case 'Common':
+        return 100;
+      case 'Uncommon':
+        return 200;
+      case 'Rare':
+        return 500;
+      case 'Legendary':
+        return 1000;
+      default:
+        return 100;
+    }
   }
 }

@@ -17,55 +17,97 @@ class RewardsController extends ChangeNotifier {
     rewards = _removeDuplicates(rewards);
 
     if (rewards.isEmpty) {
-      // Keep the rewards shown in the original mockup.
+      // Starter Pokémon based on the current rarity/XP system.
       rewards = [
-        PokemonReward(
-          id: 'reward-001',
+        _createStarterReward(
           pokemonName: 'Pikachu',
-          pokemonType: 'Electric',
-          xpEarned: 500,
+          id: 'reward-001',
           gymBadge: 'Voltage Badge',
           achievement: 'Starter Companion',
-          rarity: 'Common',
         ),
-        PokemonReward(
-          id: 'reward-002',
+        _createStarterReward(
           pokemonName: 'Squirtle',
-          pokemonType: 'Water',
-          xpEarned: 200,
+          id: 'reward-002',
           gymBadge: 'Aqua Badge',
           achievement: 'Hydration Hero',
-          rarity: 'Uncommon',
         ),
-        PokemonReward(
-          id: 'reward-003',
+        _createStarterReward(
           pokemonName: 'Charmander',
-          pokemonType: 'Fire',
-          xpEarned: 350,
+          id: 'reward-003',
           gymBadge: 'Blaze Badge',
           achievement: 'Heat Seeker',
-          rarity: 'Uncommon',
         ),
-        PokemonReward(
-          id: 'reward-004',
+        _createStarterReward(
           pokemonName: 'Machop',
-          pokemonType: 'Fighting',
-          xpEarned: 800,
+          id: 'reward-004',
           gymBadge: 'Power Badge',
           achievement: 'Strength Trainer',
-          rarity: 'Rare',
         ),
       ];
-
-      rewards = _removeDuplicates(rewards);
+    } else {
+      // Update previously saved rewards to the current
+      // catalog rarity and XP values.
+      rewards = _updateSavedRewards(rewards);
     }
 
-    // Saves the cleaned list so old duplicate entries are removed
-    // from SharedPreferences as well.
+    // Save the updated values back to SharedPreferences.
     await StorageService.saveRewards(rewards);
 
     isLoading = false;
     notifyListeners();
+  }
+
+  PokemonReward _createStarterReward({
+    required String pokemonName,
+    required String id,
+    required String gymBadge,
+    required String achievement,
+  }) {
+    final catalogReward = PokemonCatalog.rewards.firstWhere(
+      (reward) => reward.pokemonName.toLowerCase() == pokemonName.toLowerCase(),
+    );
+
+    return PokemonReward(
+      id: id,
+      pokemonName: catalogReward.pokemonName,
+      pokemonType: catalogReward.pokemonType,
+      xpEarned: catalogReward.xpEarned,
+      gymBadge: gymBadge,
+      achievement: achievement,
+      rarity: catalogReward.rarity,
+    );
+  }
+
+  List<PokemonReward> _updateSavedRewards(List<PokemonReward> savedRewards) {
+    final catalogRewards = PokemonCatalog.rewards;
+
+    return savedRewards.map((savedReward) {
+      PokemonReward? catalogReward;
+
+      for (final reward in catalogRewards) {
+        if (reward.pokemonName.trim().toLowerCase() ==
+            savedReward.pokemonName.trim().toLowerCase()) {
+          catalogReward = reward;
+          break;
+        }
+      }
+
+      // Keep the saved reward unchanged if it is not found
+      // in the current 151-Pokémon catalog.
+      if (catalogReward == null) {
+        return savedReward;
+      }
+
+      return PokemonReward(
+        id: savedReward.id,
+        pokemonName: catalogReward.pokemonName,
+        pokemonType: catalogReward.pokemonType,
+        xpEarned: catalogReward.xpEarned,
+        gymBadge: savedReward.gymBadge,
+        achievement: savedReward.achievement,
+        rarity: catalogReward.rarity,
+      );
+    }).toList();
   }
 
   List<PokemonReward> _removeDuplicates(List<PokemonReward> source) {

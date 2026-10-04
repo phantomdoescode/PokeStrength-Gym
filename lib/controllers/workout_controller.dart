@@ -1,60 +1,132 @@
 import 'package:flutter/foundation.dart';
-
+import '../data/exercise.dart';
+import '../data/exercise_catalog.dart';
 import '../data/workout.dart';
 import '../services/storage_service.dart';
 
 class WorkoutController extends ChangeNotifier {
-  List<Workout> _workouts = [];
+  List<Workout> workouts = [];
+  List<Exercise> activeExercises = [];
+  bool isLoading = false;
 
-  List<Workout> get workouts => List.unmodifiable(_workouts);
-
-  int get totalWorkouts => _workouts.length;
-
-  int get completedWorkouts =>
-      _workouts.where((workout) => workout.isCompleted).length;
-
-  // Loads saved workout history.
-  //
-  // The first launch contains sample workout records so that
-  // the application has meaningful data while demonstrating the UI.
   Future<void> initialize() async {
-    _workouts = await StorageService.loadWorkouts();
+    isLoading = true;
+    notifyListeners();
 
-    if (_workouts.isEmpty) {
-      _workouts = _createSampleWorkouts();
+    workouts = await StorageService.loadWorkouts();
+    activeExercises = await StorageService.loadActiveExercises();
 
-      await StorageService.saveWorkouts(_workouts);
+    // Keep a starter workout that matches the
+    // original mockup on first launch.
+    if (activeExercises.isEmpty) {
+      activeExercises = [
+        ExerciseCatalog.all.firstWhere(
+          (exercise) => exercise.name == 'Push Ups',
+        ),
+        ExerciseCatalog.all.firstWhere(
+          (exercise) => exercise.name == 'Bodyweight Squats',
+        ),
+        ExerciseCatalog.all.firstWhere(
+          (exercise) => exercise.name == 'Bench Press',
+        ),
+        Exercise(
+          id: 'core-01',
+          name: 'Plank',
+          category: 'Core',
+          sets: 3,
+          reps: 1,
+          duration: 3,
+          caloriesBurned: 30,
+        ),
+      ];
+
+      await StorageService.saveActiveExercises(activeExercises);
     }
 
+    // Create sample workout history if none exists.
+    if (workouts.isEmpty) {
+      final now = DateTime.now();
+
+      workouts = List.generate(
+        42,
+        (index) => Workout(
+          id: 'sample-$index',
+          exerciseName: index.isEven ? 'Push Ups' : 'Squats',
+          category: index.isEven ? 'Chest' : 'Legs',
+          sets: 3,
+          reps: 12 + (index % 4),
+          duration: 10 + (index % 10),
+          caloriesBurned: 50 + (index % 30),
+          completionDate: now.subtract(Duration(days: index)),
+          isCompleted: true,
+        ),
+      );
+
+      await StorageService.saveWorkouts(workouts);
+    }
+
+    isLoading = false;
     notifyListeners();
   }
 
-  // Saves a single workout and refreshes the screens using this controller.
+  bool containsExercise(String exerciseId) {
+    return activeExercises.any((exercise) => exercise.id == exerciseId);
+  }
+
+  Future<bool> addExerciseToWorkout(Exercise exercise) async {
+    if (containsExercise(exercise.id)) {
+      return false;
+    }
+
+    activeExercises.add(exercise);
+
+    await StorageService.saveActiveExercises(activeExercises);
+
+    notifyListeners();
+
+    return true;
+  }
+
+  Future<void> removeExerciseFromWorkout(String exerciseId) async {
+    activeExercises.removeWhere((exercise) => exercise.id == exerciseId);
+
+    await StorageService.saveActiveExercises(activeExercises);
+
+    notifyListeners();
+  }
+
+  Future<void> clearActiveWorkout() async {
+    activeExercises.clear();
+
+    await StorageService.saveActiveExercises(activeExercises);
+
+    notifyListeners();
+  }
+
   Future<void> addWorkout(Workout workout) async {
-    _workouts.add(workout);
+    workouts.add(workout);
 
-    await StorageService.saveWorkouts(_workouts);
+    await StorageService.saveWorkouts(workouts);
 
     notifyListeners();
   }
 
-  // Creates and saves a completed workout from the active workout screen.
   Future<void> addCompletedWorkout({
     required String exerciseName,
     required String category,
     required int sets,
     required int reps,
-    required int duration,
-    required int caloriesBurned,
+    int duration = 0,
+    double caloriesBurned = 0,
   }) async {
     final workout = Workout(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      id: DateTime.now().microsecondsSinceEpoch.toString(),
       exerciseName: exerciseName,
       category: category,
       sets: sets,
       reps: reps,
       duration: duration,
-      caloriesBurned: caloriesBurned,
+      caloriesBurned: caloriesBurned.round(),
       completionDate: DateTime.now(),
       isCompleted: true,
     );
@@ -62,22 +134,6 @@ class WorkoutController extends ChangeNotifier {
     await addWorkout(workout);
   }
 
-  // Creates sample records so the application can resemble the
-  // completed-state mockup immediately after first launch.
-  List<Workout> _createSampleWorkouts() {
-    return List.generate(
-      42,
-      (index) => Workout(
-        id: 'sample-${index + 1}',
-        exerciseName: 'Workout ${index + 1}',
-        category: 'Full Body',
-        sets: 3,
-        reps: 12,
-        duration: 35,
-        caloriesBurned: 280,
-        completionDate: DateTime.now().subtract(Duration(days: index)),
-        isCompleted: true,
-      ),
-    );
-  }
+  int get totalCompletedWorkouts =>
+      workouts.where((workout) => workout.isCompleted).length;
 }

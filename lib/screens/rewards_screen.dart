@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../controllers/rewards_controller.dart';
+import '../theme/app_theme.dart';
 import '../widgets/reward_card.dart';
 
 class RewardsScreen extends StatelessWidget {
@@ -9,142 +10,198 @@ class RewardsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: rewardsController,
-      builder: (context, _) {
-        final rewards = rewardsController.rewards;
+    final theme = Theme.of(context);
 
-        return SafeArea(
-          child: ListView(
-            physics: const BouncingScrollPhysics(),
-            padding: const EdgeInsets.fromLTRB(24, 32, 24, 24),
-            children: [
-              Text(
-                'Rewards Vault',
-                style: Theme.of(context).textTheme.headlineSmall,
-              ),
+    return Scaffold(
+      appBar: AppBar(title: const Text('Rewards Vault')),
 
-              const SizedBox(height: 4),
+      body: AnimatedBuilder(
+        animation: rewardsController,
+        builder: (context, _) {
+          final rewards = rewardsController.rewards;
 
-              Text(
-                'Unlock high tier pocket companion awards from raw effort!',
-                style: Theme.of(context).textTheme.bodySmall,
-              ),
-
-              const SizedBox(height: 22),
-
-              const Text(
-                'Pokémon Companion Squad',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-
-              const SizedBox(height: 12),
-
-              GridView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: rewards.length,
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 10,
-                  mainAxisSpacing: 10,
-                  childAspectRatio: 1.05,
+          return SafeArea(
+            child: ListView(
+              physics: const BouncingScrollPhysics(),
+              padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
+              children: [
+                // ==================================
+                // HEADER
+                // ==================================
+                Text(
+                  'Rewards Vault',
+                  style: theme.textTheme.headlineMedium?.copyWith(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w800,
+                  ),
                 ),
-                itemBuilder: (context, index) {
-                  final reward = rewards[index];
 
-                  return RewardCard(
-                    pokemonName: reward.pokemonName,
-                    type: reward.pokemonType,
-                    rarity: reward.rarity,
-                    xpEarned: reward.xpEarned,
-                    accentColor: _rewardColor(index),
-                  );
-                },
-              ),
+                const SizedBox(height: 4),
 
-              const SizedBox(height: 24),
-
-              const Text(
-                'Earned Gym Badges',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-
-              const SizedBox(height: 18),
-
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: const [
-                  _BadgeItem(
-                    icon: Icons.calendar_today,
-                    label: '7-Day Streak',
-                    color: Color(0xFFFFD43D),
+                Text(
+                  'Unlock high tier pocket companion awards from raw effort!',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    fontSize: 12,
+                    height: 1.35,
                   ),
-                  _BadgeItem(
-                    icon: Icons.workspace_premium_outlined,
-                    label: 'First Workout',
-                    color: Color(0xFF43A047),
+                ),
+
+                const SizedBox(height: 28),
+
+                // ==================================
+                // POKÉMON COMPANION SQUAD
+                // ==================================
+                Text(
+                  'Pokémon Companion Squad',
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800,
                   ),
-                  _BadgeItem(
-                    icon: Icons.emoji_events_outlined,
-                    label: '1000 XP Club',
-                    color: Color(0xFFEF5350),
+                ),
+
+                const SizedBox(height: 16),
+
+                if (rewards.isEmpty)
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(24),
+                    decoration: AppTheme.cardDecoration(context, radius: 10),
+                    child: Text(
+                      'No Pokémon rewards yet.',
+                      textAlign: TextAlign.center,
+                      style: theme.textTheme.bodySmall,
+                    ),
+                  )
+                else
+                  LayoutBuilder(
+                    builder: (context, constraints) {
+                      // Keep two cards per row while
+                      // allowing the cards to determine
+                      // their own height.
+                      final cardWidth = (constraints.maxWidth - 16) / 2;
+
+                      return Wrap(
+                        spacing: 16,
+                        runSpacing: 18,
+                        children: [
+                          for (final reward in rewards)
+                            SizedBox(
+                              width: cardWidth,
+                              child: RewardCard(
+                                pokemonName: reward.pokemonName,
+                                type: reward.pokemonType,
+                                rarity: reward.rarity,
+                                xpEarned: reward.xpEarned,
+                              ),
+                            ),
+                        ],
+                      );
+                    },
                   ),
-                ],
-              ),
-            ],
-          ),
-        );
-      },
+
+                const SizedBox(height: 32),
+
+                // ==================================
+                // EARNED GYM BADGES
+                // ==================================
+                Text(
+                  'Earned Gym Badges',
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+
+                const SizedBox(height: 16),
+
+                LayoutBuilder(
+                  builder: (context, constraints) {
+                    return Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: const [
+                        Expanded(
+                          child: _BadgeItem(
+                            title: '7-Day Streak',
+                            icon: Icons.calendar_month_outlined,
+                            color: AppTheme.secondary,
+                          ),
+                        ),
+                        Expanded(
+                          child: _BadgeItem(
+                            title: 'First Workout',
+                            icon: Icons.workspace_premium_outlined,
+                            color: AppTheme.success,
+                          ),
+                        ),
+                        Expanded(
+                          child: _BadgeItem(
+                            title: '1000 XP Club',
+                            icon: Icons.emoji_events_outlined,
+                            color: AppTheme.primary,
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                ),
+
+                const SizedBox(height: 20),
+              ],
+            ),
+          );
+        },
+      ),
     );
-  }
-
-  Color _rewardColor(int index) {
-    const colors = [
-      Color(0xFFFFD43D),
-      Color(0xFF27AEEF),
-      Color(0xFFFF9E21),
-      Color(0xFF90A4AE),
-    ];
-
-    return colors[index % colors.length];
   }
 }
 
 class _BadgeItem extends StatelessWidget {
+  final String title;
   final IconData icon;
-  final String label;
   final Color color;
 
   const _BadgeItem({
+    required this.title,
     required this.icon,
-    required this.label,
     required this.color,
   });
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: 85,
+    final theme = Theme.of(context);
+
+    final isDark = theme.brightness == Brightness.dark;
+
+    final textColor = isDark ? AppTheme.darkTextPrimary : AppTheme.textPrimary;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 4),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            width: 58,
-            height: 58,
+            width: 68,
+            height: 68,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: color.withValues(alpha: 0.12),
-              border: Border.all(color: color, width: 1.5),
+              color: color.withValues(alpha: isDark ? 0.18 : 0.12),
+              border: Border.all(color: color, width: 2),
             ),
-            child: Icon(icon, color: color, size: 26),
+            child: Icon(icon, color: color, size: 31),
           ),
 
-          const SizedBox(height: 7),
+          const SizedBox(height: 8),
 
           Text(
-            label,
+            title,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
             textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 9, fontWeight: FontWeight.bold),
+            style: TextStyle(
+              fontSize: 9,
+              fontWeight: FontWeight.w800,
+              color: textColor,
+            ),
           ),
         ],
       ),

@@ -3,8 +3,8 @@ import '../controllers/navigation_controller.dart';
 import '../controllers/rewards_controller.dart';
 import '../controllers/trainer_controller.dart';
 import '../controllers/workout_controller.dart';
+import '../theme/app_theme.dart';
 import '../widgets/app_bottom_nav.dart';
-import '../widgets/primary_button.dart';
 import '../widgets/reward_card.dart';
 import '../widgets/trainer_avatar.dart';
 import '../widgets/xp_progress_bar.dart';
@@ -123,15 +123,11 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
               // Trainer XP progress card.
               Container(
                 padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surface,
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: const Color(0xFFE6E6E6)),
-                ),
+                decoration: AppTheme.cardDecoration(context, radius: 10),
                 child: XpProgressBar(
                   level: member.currentLevel,
                   currentXp: member.totalXp,
-                  nextLevelXp: 5000,
+                  nextLevelXp: TrainerController.xpPerLevel,
                 ),
               ),
 
@@ -147,11 +143,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
 
               // Upper Body Blast card from the mockup.
               Container(
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surface,
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: const Color(0xFFE6E6E6)),
-                ),
+                decoration: AppTheme.cardDecoration(context, radius: 10),
                 clipBehavior: Clip.antiAlias,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -284,10 +276,6 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                           type: nearbyRewards[index].pokemonType,
                           rarity: nearbyRewards[index].rarity,
                           xpEarned: nearbyRewards[index].xpEarned,
-                          accentColor: index.isEven
-                              ? const Color(0xFFFFD43D)
-                              : const Color(0xFF27AEEF),
-                          compact: true,
                         ),
                       ),
 
@@ -316,10 +304,13 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
           onFinished: () {
             _navigationController.setIndex(3);
           },
+          onAddExercises: () {
+            _navigationController.setIndex(2);
+          },
         );
 
       case 2:
-        return const ExerciseLibraryScreen();
+        return ExerciseLibraryScreen(workoutController: _workoutController);
 
       case 3:
         return RewardsScreen(rewardsController: _rewardsController);

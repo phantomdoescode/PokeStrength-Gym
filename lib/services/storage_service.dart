@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../data/exercise.dart';
 import '../data/member.dart';
 import '../data/pokemon_reward.dart';
 import '../data/workout.dart';
@@ -9,6 +10,16 @@ class StorageService {
   static const String memberKey = 'member';
   static const String workoutKey = 'workouts';
   static const String rewardsKey = 'rewards';
+  static const String _activeExercisesKey = 'active_exercises';
+
+  // Clear all saved PokéStrength Gym data.
+  static Future<void> clearAll() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(memberKey);
+    await prefs.remove(workoutKey);
+    await prefs.remove(rewardsKey);
+    await prefs.remove(_activeExercisesKey);
+  }
 
   // Saves one member as a JSON string.
   static Future<void> saveMember(Member member) async {
@@ -82,5 +93,34 @@ class StorageService {
               PokemonReward.fromJson(Map<String, dynamic>.from(item as Map)),
         )
         .toList();
+  }
+
+  // Save exercises that are currently active in the workout session.
+  // This is used to restore the state if the app is closed or crashes.
+  static Future<void> saveActiveExercises(List<Exercise> exercises) async {
+    final prefs = await SharedPreferences.getInstance();
+    final data = exercises.map((exercise) => exercise.toJson()).toList();
+    await prefs.setString(_activeExercisesKey, jsonEncode(data));
+  }
+
+  // Load the exercises that were active in the workout session.
+  static Future<List<Exercise>> loadActiveExercises() async {
+    final prefs = await SharedPreferences.getInstance();
+    final data = prefs.getString(_activeExercisesKey);
+
+    if (data == null || data.isEmpty) {
+      return [];
+    }
+
+    try {
+      final decoded = jsonDecode(data) as List<dynamic>;
+      return decoded
+          .map(
+            (item) => Exercise.fromJson(Map<String, dynamic>.from(item as Map)),
+          )
+          .toList();
+    } catch (_) {
+      return [];
+    }
   }
 }

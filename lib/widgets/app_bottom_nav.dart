@@ -12,19 +12,9 @@ class AppBottomNav extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // The mockup uses five permanent destinations.
     return BottomNavigationBar(
       currentIndex: currentIndex,
       onTap: onDestinationSelected,
-      type: BottomNavigationBarType.fixed,
-      backgroundColor: Colors.white,
-      elevation: 8,
-      selectedItemColor: const Color(0xFFEF5350),
-      unselectedItemColor: const Color(0xFF666666),
-      selectedFontSize: 9,
-      unselectedFontSize: 9,
-      showSelectedLabels: true,
-      showUnselectedLabels: true,
       items: const [
         BottomNavigationBarItem(
           icon: Icon(Icons.home_outlined),
@@ -42,8 +32,8 @@ class AppBottomNav extends StatelessWidget {
           label: 'Library',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.emoji_events_outlined),
-          activeIcon: Icon(Icons.emoji_events),
+          icon: Icon(Icons.card_giftcard_outlined),
+          activeIcon: Icon(Icons.card_giftcard),
           label: 'Rewards',
         ),
         BottomNavigationBarItem(

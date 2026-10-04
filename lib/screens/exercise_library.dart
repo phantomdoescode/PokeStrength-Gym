@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
+import '../controllers/workout_controller.dart';
+import '../theme/app_theme.dart';
+import 'category_workout_list_screen.dart';
 
 class ExerciseLibraryScreen extends StatefulWidget {
-  const ExerciseLibraryScreen({super.key});
+  final WorkoutController workoutController;
+
+  const ExerciseLibraryScreen({super.key, required this.workoutController});
 
   @override
   State<ExerciseLibraryScreen> createState() => _ExerciseLibraryScreenState();
@@ -10,37 +15,41 @@ class ExerciseLibraryScreen extends StatefulWidget {
 class _ExerciseLibraryScreenState extends State<ExerciseLibraryScreen> {
   final TextEditingController _searchController = TextEditingController();
 
-  final List<_MuscleGroup> _categories = const [
-    _MuscleGroup(
+  String _query = '';
+
+  final List<_LibraryCategory> _categories = const [
+    _LibraryCategory(
       name: 'Chest Workouts',
+      category: 'Chest',
       count: 24,
-      bonus: 'ATTACK +15',
-      imagePath: 'docs/assets/images/chest_workouts.png',
+      badge: 'ATTACK +15',
+      image: 'docs/assets/images/chest_workouts.png',
     ),
-    _MuscleGroup(
+    _LibraryCategory(
       name: 'Arm Workouts',
+      category: 'Arms',
       count: 18,
-      bonus: 'POWER +18',
-      imagePath: 'docs/assets/images/arm_workouts.png',
+      badge: 'POWER +18',
+      image: 'docs/assets/images/arm_workouts.png',
     ),
-    _MuscleGroup(
-      name: 'Leg Workouts',
+    _LibraryCategory(
+      name: 'Legs Workouts',
+      category: 'Legs',
       count: 22,
-      bonus: 'DEFENSE +20',
-      imagePath: 'docs/assets/images/leg_workouts.png',
+      badge: 'DEFENSE +20',
+      image: 'docs/assets/images/leg_workouts.png',
     ),
   ];
 
-  List<_MuscleGroup> get _filteredCategories {
-    final query = _searchController.text.trim().toLowerCase();
+  @override
+  void initState() {
+    super.initState();
 
-    if (query.isEmpty) {
-      return _categories;
-    }
-
-    return _categories
-        .where((category) => category.name.toLowerCase().contains(query))
-        .toList();
+    _searchController.addListener(() {
+      setState(() {
+        _query = _searchController.text.trim().toLowerCase();
+      });
+    });
   }
 
   @override
@@ -49,179 +58,196 @@ class _ExerciseLibraryScreenState extends State<ExerciseLibraryScreen> {
     super.dispose();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final categories = _filteredCategories;
+  List<_LibraryCategory> get _filteredCategories {
+    if (_query.isEmpty) {
+      return _categories;
+    }
 
-    return SafeArea(
-      child: ListView(
-        physics: const BouncingScrollPhysics(),
-        padding: const EdgeInsets.fromLTRB(24, 32, 24, 24),
-        children: [
-          Text('Library', style: Theme.of(context).textTheme.headlineSmall),
+    return _categories
+        .where((category) => category.name.toLowerCase().contains(_query))
+        .toList();
+  }
 
-          const SizedBox(height: 18),
-
-          Container(
-            height: 46,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(24),
-              border: Border.all(color: const Color(0xFFE6E6E6)),
-            ),
-            child: TextField(
-              controller: _searchController,
-              onChanged: (_) {
-                setState(() {});
-              },
-              decoration: const InputDecoration(
-                hintText: 'Search exercises...',
-                prefixIcon: Icon(Icons.search, size: 20),
-                suffixIcon: Icon(Icons.tune, size: 18),
-                border: InputBorder.none,
-                contentPadding: EdgeInsets.symmetric(vertical: 12),
-              ),
-            ),
-          ),
-
-          const SizedBox(height: 22),
-
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text(
-                'MUSCLE GROUP CATEGORIES',
-                style: TextStyle(
-                  fontSize: 11,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF666666),
-                ),
-              ),
-              const Text(
-                '84 Total',
-                style: TextStyle(
-                  fontSize: 10,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFFEF5350),
-                ),
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 12),
-
-          if (categories.isEmpty)
-            const Padding(
-              padding: EdgeInsets.all(32),
-              child: Center(child: Text('No muscle group found.')),
-            )
-          else
-            ...categories.map(_buildCategoryCard),
-        ],
+  void _openCategory(_LibraryCategory category) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => CategoryWorkoutListScreen(
+          category: category.category,
+          title: category.name,
+          workoutController: widget.workoutController,
+        ),
       ),
     );
   }
 
-  Widget _buildCategoryCard(_MuscleGroup category) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: const Color(0xFFE6E6E6)),
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+  @override
+  Widget build(BuildContext context) {
+    final categories = _filteredCategories;
+
+    final totalExercises = _categories.fold<int>(
+      0,
+      (sum, category) => sum + category.count,
+    );
+
+    return Scaffold(
+      appBar: AppBar(title: const Text('Exercise Library')),
+      body: ListView(
+        padding: const EdgeInsets.all(AppSpacing.screen),
         children: [
-          SizedBox(
-            height: 122,
-            width: double.infinity,
-            child: Image.asset(category.imagePath, fit: BoxFit.cover),
-          ),
-
-          Padding(
-            padding: const EdgeInsets.fromLTRB(12, 9, 12, 12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 7,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFEF5350),
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: Text(
-                        category.bonus,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 8,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-
-                    const Spacer(),
-
-                    Text(
-                      '${category.count} Exercises',
-                      style: const TextStyle(
-                        fontSize: 9,
-                        color: Color(0xFF666666),
-                      ),
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 7),
-
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        category.name,
-                        style: const TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-
-                    Container(
-                      width: 28,
-                      height: 28,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(color: const Color(0xFFE6E6E6)),
-                      ),
-                      child: const Icon(Icons.chevron_right, size: 18),
-                    ),
-                  ],
-                ),
-              ],
+          TextField(
+            controller: _searchController,
+            decoration: const InputDecoration(
+              hintText: 'Search muscle groups',
+              prefixIcon: Icon(Icons.search),
             ),
           ),
+
+          const SizedBox(height: 24),
+
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'MUSCLE GROUP CATEGORIES',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 0.6,
+                ),
+              ),
+              Text(
+                '$totalExercises Total',
+                style: Theme.of(
+                  context,
+                ).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w700),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 14),
+
+          if (categories.isEmpty)
+            Container(
+              padding: const EdgeInsets.all(24),
+              decoration: AppTheme.cardDecoration(context, radius: 18),
+              child: const Text(
+                'No muscle group matched your search.',
+                textAlign: TextAlign.center,
+              ),
+            )
+          else
+            for (final category in categories) ...[
+              _CategoryCard(
+                category: category,
+                onTap: () => _openCategory(category),
+              ),
+              const SizedBox(height: 14),
+            ],
         ],
       ),
     );
   }
 }
 
-class _MuscleGroup {
+class _LibraryCategory {
   final String name;
+  final String category;
   final int count;
-  final String bonus;
-  final String imagePath;
+  final String badge;
+  final String image;
 
-  const _MuscleGroup({
+  const _LibraryCategory({
     required this.name,
+    required this.category,
     required this.count,
-    required this.bonus,
-    required this.imagePath,
+    required this.badge,
+    required this.image,
   });
+}
+
+class _CategoryCard extends StatelessWidget {
+  final _LibraryCategory category;
+  final VoidCallback onTap;
+
+  const _CategoryCard({required this.category, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(18),
+      child: Container(
+        clipBehavior: Clip.antiAlias,
+        decoration: AppTheme.cardDecoration(context, radius: 18),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Image.asset(
+              category.image,
+              height: 170,
+              width: double.infinity,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                return Container(
+                  height: 170,
+                  color: Colors.grey.shade300,
+                  alignment: Alignment.center,
+                  child: const Icon(
+                    Icons.image_not_supported_outlined,
+                    size: 48,
+                  ),
+                );
+              },
+            ),
+
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 14, 16, 16),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          category.name,
+                          style: Theme.of(context).textTheme.bodyLarge
+                              ?.copyWith(fontWeight: FontWeight.w800),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          '${category.count} exercises',
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppTheme.secondary.withValues(alpha: 0.25),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      category.badge,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(width: 8),
+
+                  const Icon(Icons.chevron_right),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
