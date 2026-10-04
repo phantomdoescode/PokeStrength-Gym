@@ -15,14 +15,6 @@ looks exactly like what it is.
 At least six entries. One per real use. Every entry needs a commit link.
 -->
 
-### 2026-09-22 - project setup and theme
-
-- **Tool:** Claude (web chat) 
-- **What I asked for:** Help setting up the initial PokéStrength Gym Flutter project structure, including the main application file and the finalized Light/Dark theme based on my design system.
-- **What it gave back:** A starting `main.dart`, `AppTheme`, and the initial project structure so the application could use the finalized red/yellow palette, dark mode, and `DevicePreview`.
-- **What I kept, what I changed, and why:** I kept the overall structure because it matched the project prompts and my design system. I still checked the naming, theme values, and how `DevicePreview` was connected because some generated code did not match the names I was actually using in the project.
-- **Commit:** [`fb2ee1f`](https://github.com/phantomdoescode/PokeStrength-Gym/commit/fb2ee1f98a56c52ab77ca8dc41ca63109a0bd9e7)
-
 ### 2026-09-23 - data models and local storage
 
 - **Tool:** ChatGPT (web chat)
