@@ -1,10 +1,5 @@
 # Proposal
 
-<!--
-The project proposal for PokéStrength Gym. Replace this with the final
-version when the project is completed.
--->
-
 ## The problem, in one sentence
 
 PokéStrength Gym aims to make workout tracking more engaging by combining exercise logging with Pokémon-inspired XP progression, trainer levels, achievements, and collectible rewards that encourage users to continue exercising.
