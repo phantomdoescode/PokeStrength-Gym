@@ -101,8 +101,8 @@ Future improvements may include Pokémon Gym Challenges, leaderboards and monthl
 ## Credits
 
 - Packages: see [`pubspec.yaml`](./pubspec.yaml)
-- Assets, icons, 3D models, sounds: (tentative)
-- People who helped: (tentative)
+- Assets, icons, 3D models, sounds: Used built-in Material icons and package-provided fonts.
+- People who helped: N/A
 
 ## Security Checklist
 
